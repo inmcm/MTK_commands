@@ -1,6 +1,7 @@
 #Exercise the MTK Command Script
 from __future__ import print_function
 import mtk
+from mtk import *
 
 # Static Sentences
 print('Set Default Sentence Updating:', mtk.default_sentences)
@@ -24,3 +25,20 @@ for rate in nmea_rates:
 
 enable_string = mtk.update_sentences(gsv_int=5)
 print(enable_string)
+
+
+# Test Command Reception
+ack_test = '$PMTK001,604,3*32\r\n'
+my_test = MtkCommandRx()
+
+for char in ack_test:
+    result = my_test.update(char)
+    if result:
+        print('Found Sentence:', result)
+
+query_test = '$PMTK514,0,1,1,1,1,5,0,0,0,0,0,0,0,0,0,0,0,0,0*2B\r\n'
+
+for char in query_test:
+    result = my_test.update(char)
+    if result:
+        print('Found Sentence:', result)
