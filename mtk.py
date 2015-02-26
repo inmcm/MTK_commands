@@ -15,7 +15,6 @@
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-from __future__ import print_function
 
 __valid_baudrates = [4800, 9600, 14400, 19200, 38400, 57600, 115200]
 
@@ -164,29 +163,3 @@ def update_sentences(en_gll=True, en_rmc=True, en_vtg=True, en_gga=True, en_gsa=
     full_string = '$' + cmd_body + '*' + crc + '\r\n'
 
     return full_string
-
-
-if __name__ == "__main__":
-
-    # Static Sentences
-    print('Set Default Sentence Updating:', default_sentences)
-    print('Do a Hot Start:', hot_start)
-    print('Do a Warm Start:', warm_start)
-    print('Do a cold start:', cold_start)
-    print('Do a full reset and cold start:', full_cold_start)
-    print('Go into Standby:', standby)
-
-    # Baudrate Sentences
-    print('Valid Baudrate Strings')
-    for test in __valid_baudrates:
-        test_string = update_baudrate(test)
-        print('Baudrate:', test)
-        print('Required String:', test_string)
-
-    nmea_rates = [1.0, 5.0, 10.0, 3.5]
-    for rate in nmea_rates:
-        nmea_sentence = update_nmea_rate(rate)
-        print(nmea_sentence)
-
-    enable_string = update_sentences(gsv_int=5)
-    print(enable_string)
