@@ -60,18 +60,62 @@ You can also generate a command sentence to alter which NMEA sentences are outpu
 '$PMTK314,1,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0*2b\r\n'
 ```
 
-The following example can used on the [pyboard] to perform a factory reset, disable all sentences but RMC, set the update rate to 10Hz, and finally change the baudrate to 115200bps
+Reply and status commands from the GPS module can be parsed using the *MtkCommandRx* object. The `update()` method accepts serial characters and returns the PMTK sentence when a valid one is recieved.
+```python
+>>> from mtk import *
+>>> ack_test = '$PMTK001,604,3*32\r\n'
+>>> my_test = MtkCommandRx()
+>>> for char in ack_test:
+...    result = my_test.update(char) 
+...    if result:
+...         print('Found Sentence:', result)       
+...         
+Found Sentence: PMTK001,604,3*32
+```
+
+The following example can used on the [pyboard] to disable all sentences but RMC, set the update rate to 10Hz, and finally change the baudrate to 115200bps
 ```python
 >>> from pyb import UART
 >>> import mtk
->>>
->>> uart = UART(1, 9600)
->>> uart.write(mtk.full_cold_start)
+>>> from mtk import *
+>>> 
+>>> baud = 9600
+# Start UART Assuming 9600bps default
+>>> uart = UART(3, baud)
+>>> 
+# Initialize Command Checker
+>>> mtk_chk = MtkCommandRx()
+>>> 
+# Turn off all Sentences but RMC
 >>> uart.write(mtk.update_sentences(en_gga=False,en_gsv=False,en_gsa=False,en_vtg=False,en_gll=False))
+>>> 
+# Check for Confirmation Command
+>>> result = None
+>>> while not result:
+...     while uart.any():
+...         result = mtk_chk.update(chr(uart.readchar()))
+...			if result:
+...				if result[-4] == '3':
+...					print('Command Succeded:', result)
+...					break
+>>> 
+# Set Update Rate to 10Hz
 >>> uart.write(mtk.update_nmea_rate(10))
->>> uart.write(mtk.update_baudrate(115200))
->>> uart.close
->>> uart = UART(1, 115200)
+>>> 
+# Check for Confirmation of Command
+>>> result = None
+>>> while not result:
+...		while uart.any():
+...			result = mtk_chk.update(chr(uart.readchar()))
+...			if result:
+...				if result[-4] == '3':
+...					print('Command Succeded:', result)
+...					break
+>>> 
+# Set Baudrate to 115200bps
+>>> baud = 115200
+>>> uart.write(mtk.update_baudrate(baud))
+# No Confirmation is Given on Baud Rate Change
 ```
 
 [Adafruit Ultimate GPS Breakout]:http://www.adafruit.com/products/746
