@@ -14,7 +14,6 @@
 # WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import operator
 import string
 
 __valid_baudrates = [4800, 9600, 14400, 19200, 38400, 57600, 115200]
@@ -47,7 +46,7 @@ def crc_calc(input_string):
     :param input_string: String to calculate CRC for.
     :return: 2 character CRC string
     """
-    return '{:02X}'.format(reduce(operator.xor, map(ord, input_string), 0))
+    return '{:02X}'.format(reduce(lambda a, b: a ^ b, map(ord, input_string), 0))
 
 
 def update_nmea_rate(nmearate):
