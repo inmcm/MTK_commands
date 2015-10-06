@@ -15,6 +15,7 @@
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 import operator
+import string
 
 __valid_baudrates = [4800, 9600, 14400, 19200, 38400, 57600, 115200]
 
@@ -180,9 +181,7 @@ class MtkCommandRx(object):
         """Process a new input char and update MTK object. Returns MTK command string if found"""
 
         # Validate new_char is a printable char
-        ascii_char = ord(new_char)
-
-        if 33 <= ascii_char <= 126:
+        if new_char in string.printable
             self.char_count += 1
 
             # Check if a new string is starting ($)
