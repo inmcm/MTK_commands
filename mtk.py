@@ -14,7 +14,7 @@
 # WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
 # COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
 # OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-import string
+
 
 __valid_baudrates = [4800, 9600, 14400, 19200, 38400, 57600, 115200]
 
@@ -42,11 +42,24 @@ standby = '$PMTK161,0*28\r\n'
 
 def crc_calc(input_string):
     """
-    Calculates XOR CRC of inputted string
-    :param input_string: String to calculate CRC for.
-    :return: 2 character CRC string
+    Calculates cumulative XOR CRC of inputted string
+    :param input_string: Str to CRC
+    :return: 2 char CRC str
     """
-    return '{:02X}'.format(reduce(lambda a, b: a ^ b, map(ord, input_string), 0))
+    crc = 0
+
+    for next_char in input_string:
+        ascii_val = ord(next_char)
+        crc ^= ascii_val
+
+    hex_crc = hex(crc)
+
+    if crc <= 0xF:
+        crc_byte = '0' + hex_crc[2]
+    else:
+        crc_byte = hex_crc[2:4]
+
+    return crc_byte
 
 
 def update_nmea_rate(nmearate):
@@ -180,7 +193,9 @@ class MtkCommandRx(object):
         """Process a new input char and update MTK object. Returns MTK command string if found"""
 
         # Validate new_char is a printable char
-        if new_char in string.printable
+        ascii_char = ord(new_char)
+
+        if 33 <= ascii_char <= 126:
             self.char_count += 1
 
             # Check if a new string is starting ($)
